@@ -3,6 +3,7 @@ package handler
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -46,6 +47,12 @@ type itemsResponse struct {
 	} `json:"items"`
 }
 
+type createItemRequest struct {
+	GroupID int    `json:"group_id"`
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+}
+
 func writeResponse(rw http.ResponseWriter, r response) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(r.HTTPCode)
@@ -86,4 +93,19 @@ func makeGroupedItemsResponse(items []config.GroupedItems) response {
 	}
 
 	return resp
+}
+
+func readRequestBody(r *http.Request) ([]byte, error) {
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if errBodyClose := r.Body.Close(); errBodyClose != nil {
+			log.WithError(err).Error("fail to close request body")
+			return
+		}
+	}()
+
+	return b, nil
 }

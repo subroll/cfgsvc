@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -75,6 +76,39 @@ func (i *Item) Get(rw http.ResponseWriter, r *http.Request) {
 
 // Post is the http handler for /config
 func (i *Item) Post(rw http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	b, err := readRequestBody(r)
+	if err != nil {
+		log.WithError(err).Error("fail to read request body")
+		writeResponse(rw, badRequestResponse)
+	}
+
+	var item createItemRequest
+	if err = json.Unmarshal(b, &item); err != nil {
+		log.WithError(err).Error("fail to unmarshal request body")
+		writeResponse(rw, badRequestResponse)
+		return
+	}
+
+	items, err := i.itemSvc.Create(ctx, config.ItemToCreate{
+		GroupID: item.GroupID,
+		Key:     item.Key,
+		Value:   item.Value,
+	})
+	if err != nil {
+		if err == config.ErrInvalidGroup || err == config.ErrRequiredField {
+			log.WithError(err).Error("no config item created")
+			writeResponse(rw, badRequestResponse)
+			return
+		}
+
+		log.WithError(err).Error("fail to create config item")
+		writeResponse(rw, internalServerErrorResponse)
+		return
+	}
+
+	writeResponse(rw, makeGroupedItemsResponse(items))
+	return
 }
 
 // Put is the http handler for /config
