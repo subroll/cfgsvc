@@ -151,4 +151,41 @@ func (i *Item) Put(rw http.ResponseWriter, r *http.Request) {
 
 // Delete is the http handler for /config
 func (i *Item) Delete(rw http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	rawID := r.URL.Query().Get("id")
+	var err error
+
+	var id int
+	if len(rawID) > 0 {
+		id, err = strconv.Atoi(rawID)
+		if err != nil {
+			log.WithError(err).Error("can not convert id to int")
+			writeResponse(rw, badRequestResponse)
+			return
+		}
+		if id == 0 {
+			log.Warn("id is zero")
+			writeResponse(rw, badRequestResponse)
+			return
+		}
+	}
+
+	if err := i.itemSvc.Remove(ctx, id); err != nil {
+		if err == config.ErrNoRecordRemoved || err == config.ErrRequiredField {
+			log.WithError(err).Error("no config item removed")
+			writeResponse(rw, badRequestResponse)
+			return
+		}
+
+		log.WithError(err).Error("fail to remove config item")
+		writeResponse(rw, internalServerErrorResponse)
+		return
+	}
+
+	writeResponse(rw, response{
+		HTTPCode: http.StatusOK,
+		Data: struct {
+			ID int `json:"id"`
+		}{ID: id},
+	})
 }
