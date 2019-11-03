@@ -2,7 +2,12 @@ package persistent
 
 import (
 	"context"
+	"errors"
 	"time"
+)
+
+var (
+	ErrNoRowsAffected = errors.New("no rows affected")
 )
 
 // Item is the data structure of config item
