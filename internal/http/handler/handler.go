@@ -53,6 +53,13 @@ type createItemRequest struct {
 	Value   string `json:"value"`
 }
 
+type updateItemRequest struct {
+	ID      int    `json:"id"`
+	GroupID int    `json:"group_id"`
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+}
+
 func writeResponse(rw http.ResponseWriter, r response) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(r.HTTPCode)

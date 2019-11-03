@@ -113,6 +113,40 @@ func (i *Item) Post(rw http.ResponseWriter, r *http.Request) {
 
 // Put is the http handler for /config
 func (i *Item) Put(rw http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	b, err := readRequestBody(r)
+	if err != nil {
+		log.WithError(err).Error("fail to read request body")
+		writeResponse(rw, badRequestResponse)
+	}
+
+	var item updateItemRequest
+	if err = json.Unmarshal(b, &item); err != nil {
+		log.WithError(err).Error("fail to unmarshal request body")
+		writeResponse(rw, badRequestResponse)
+		return
+	}
+
+	items, err := i.itemSvc.Change(ctx, config.ItemToUpdate{
+		ID:      item.ID,
+		GroupID: item.GroupID,
+		Key:     item.Key,
+		Value:   item.Value,
+	})
+	if err != nil {
+		if err == config.ErrInvalidGroup || err == config.ErrRequiredField {
+			log.WithError(err).Error("no config item updated")
+			writeResponse(rw, badRequestResponse)
+			return
+		}
+
+		log.WithError(err).Error("fail to update config item")
+		writeResponse(rw, internalServerErrorResponse)
+		return
+	}
+
+	writeResponse(rw, makeGroupedItemsResponse(items))
+	return
 }
 
 // Delete is the http handler for /config
