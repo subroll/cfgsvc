@@ -2,7 +2,19 @@
 package config
 
 import (
+	"errors"
 	"time"
+)
+
+var (
+	// ErrRequiredField will be return if one or more required field is missing or empty
+	ErrRequiredField = errors.New("required field can not be missing or empty")
+	// ErrNotFound will be return if no record about config item or group found
+	ErrNotFound = errors.New("no record found")
+	// ErrInvalidGroup will be return if there is one or more invalid group while adding new item config
+	ErrInvalidGroup = errors.New("invalid group id")
+	// ErrNoRecordRemoved will be return if no record config item or group removed
+	ErrNoRecordRemoved = errors.New("no record removed")
 )
 
 // GroupedItems is the struct for grouped config items
