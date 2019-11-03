@@ -1,0 +1,9 @@
+sql:
+  username: ''        # mysql username
+  password: ''        # mysql password
+  host: ''            # mysql host
+  db_name: ''         # mysql database name
+  charset: 'utf8'     # mysql character set
+  max_life_time: 30   # mysql client connection maximum life time (in seconds)
+  max_idle_conns: 10  # mysql client maximum idle connection
+  max_open_conns: 20  # mysql client maximum open connection

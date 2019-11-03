@@ -1,0 +1,499 @@
+openapi: 3.0.0
+info:
+  description: |
+    This is a config storage server.
+  version: "1.0.0"
+  title: cfgsvc
+  contact:
+    email: wisnu.septiaji@gmail.com
+servers:
+  - description: Development
+    url: https://cfgsvc.dev/
+  - description: Staging
+    url: https://cfgsvc.stag/
+  - description: Production
+    url: https://cfgsvc.prod/
+tags:
+  - name: config
+    description: Everything about your config item
+  - name: group
+    description: Everything about your config group
+paths:
+  /config:
+    get:
+      tags:
+        - config
+      summary: Get config item
+      description: |
+        Could use `/config` as path if you need to get all the config items.
+
+        Could use `/config?group_id={groupID}` as path if you need to get all the config items in specific group.
+
+        Could use `/config?id={id}&group_id={groupID}` as path if you need to get a config item in specific group.
+      operationId: getConfig
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: ID of config item, can not be 0
+        - in: query
+          name: group_id
+          schema:
+            type: integer
+          description: ID of config group, can not be 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if either `id` or `group_id` is not a valid identifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: |
+            Not Found
+
+            Will give this response if no result found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - config
+      summary: Add a new config item
+      operationId: addConfig
+      requestBody:
+        $ref: '#/components/requestBodies/PostConfig'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if the request body can not be read or parse.
+
+            Will give this response if the `group_id` is invalid.
+
+            Will give this response if the `key` or `value` is either missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - config
+      summary: Update an existing config item
+      operationId: updateConfig
+      requestBody:
+        $ref: '#/components/requestBodies/PutConfig'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if the request body can not be read or parse.
+
+            Will give this response if the `group_id` is invalid.
+
+            Will give this response if the `id` or `key` or `value` is either missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - config
+      summary: Delete an existing config item
+      operationId: deleteConfig
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: ID of config item
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulDeleteResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if the request body can not be read or parse.
+
+            Will give this response if the `id` is zero or not found in the storage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /group:
+    get:
+      tags:
+        - group
+      summary: Get config group
+      description: |
+        Could use `/group` as path if you need to get all the config groups.
+
+        Could use `/config?id={id}` as path if you need to get a config group.
+
+        Could use `/config?id={id}&id={id}...` as path if you need to get more than 1 config group.
+      operationId: getGroup
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: ID of config group
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if `id` is not a valid identifier.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: |
+            Not Found
+
+            Will give this response if no result found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - group
+      summary: Add a new config group
+      operationId: addGroup
+      requestBody:
+        $ref: '#/components/requestBodies/PostGroup'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if the request body can not be read or parse.
+
+            Will give this response if the `name` is either missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - group
+      summary: Update an existing config group
+      operationId: updateGroup
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GroupResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if the request body can not be read or parse.
+
+            Will give this response if the `id` is invalid.
+
+            Will give this response if the `name` is either missing or empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - group
+      summary: Delete an existing config item
+      operationId: deleteGroup
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: integer
+          description: ID of config item
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulDeleteResponse'
+        '400':
+          description: |
+            Bad Request
+
+            Will give this response if the request body can not be read or parse.
+
+            Will give this response if the `id` is zero or not found in the storage.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: |
+            Internal Server Error
+
+            Will give this response if something wrong happens.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    Config:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        key:
+          type: string
+        value:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    Group:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        group_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    ConfigResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              group_id:
+                type: integer
+                format: int32
+              group_name:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Config'
+    NewConfigRequest:
+      type: object
+      required:
+        - group_id
+        - key
+        - value
+      properties:
+        group_id:
+          type: integer
+          format: int32
+        key:
+          type: string
+        value:
+          type: string
+    UpdateConfigRequest:
+      type: object
+      required:
+        - id
+        - group_id
+        - key
+        - value
+      properties:
+        id:
+          type: integer
+          format: int32
+        group_id:
+          type: integer
+          format: int32
+        key:
+          type: string
+        value:
+          type: string
+    GroupResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Group'
+    NewGroupRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+    UpdateGroupRequest:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: integer
+          format: int32
+        name:
+          type: string
+    SuccessfulDeleteResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int32
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+  requestBodies:
+    PostConfig:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NewConfigRequest'
+      description: New config object that needs to be added to the config storage
+      required: true
+    PutConfig:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateConfigRequest'
+      description: Config object that needs to be updated in the config storage
+      required: true
+    PostGroup:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NewGroupRequest'
+      description: New group object that needs to be added to the config storage
+      required: true
+    PutGroup:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateGroupRequest'
