@@ -60,6 +60,22 @@ type updateItemRequest struct {
 	Value   string `json:"value"`
 }
 
+type groupResponse struct {
+	ID        int       `json:"id"`
+	GroupName string    `json:"group_name"`
+	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type createGroupRequest struct {
+	Name string `json:"name"`
+}
+
+type updateGroupRequest struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 func writeResponse(rw http.ResponseWriter, r response) {
 	rw.Header().Set("Content-Type", "application/json")
 	rw.WriteHeader(r.HTTPCode)
@@ -115,4 +131,20 @@ func readRequestBody(r *http.Request) ([]byte, error) {
 	}()
 
 	return b, nil
+}
+
+func makeGroupResponse(groups []config.Group) response {
+	groupsResponse := make([]groupResponse, len(groups))
+	resp := response{
+		HTTPCode: http.StatusOK,
+		Data:     groupsResponse,
+	}
+	for i := 0; i < len(groups); i++ {
+		groupsResponse[i].ID = groups[i].ID
+		groupsResponse[i].GroupName = groups[i].Name
+		groupsResponse[i].CreatedAt = groups[i].CreatedAt
+		groupsResponse[i].UpdatedAt = groups[i].UpdatedAt
+	}
+
+	return resp
 }
