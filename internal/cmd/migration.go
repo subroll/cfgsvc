@@ -4,14 +4,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var migrateCMD = &cobra.Command{
-	Use:   "migrate",
+var migrationCMD = &cobra.Command{
+	Use:   "migration",
 	Short: "Run migration",
 	Run:   runMigration,
 }
 
 func init() {
-	rootCMD.AddCommand(migrateCMD)
+	rootCMD.AddCommand(migrationCMD)
 }
 
 func runMigration(c *cobra.Command, args []string) {
