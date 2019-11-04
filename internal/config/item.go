@@ -47,16 +47,17 @@ func (is *itemService) makeGroupedItems(items []persistent.Item) []GroupedItems 
 		groups[item.Group.ID] = append(groups[item.Group.ID], item)
 	}
 
-	var i int
-	groupedItems := make([]GroupedItems, len(groups))
+	var groupedItems []GroupedItems
 	for _, v := range groups {
-		groupedItems[i].GroupID = v[i].Group.ID
-		groupedItems[i].GroupName = v[i].Group.Name
-		groupedItems[i].CreatedAt = v[i].Group.CreatedAt
-		groupedItems[i].UpdatedAt = v[i].Group.UpdatedAt
+		gi := GroupedItems{
+			GroupID:   v[0].Group.ID,
+			GroupName: v[0].Group.Name,
+			CreatedAt: v[0].Group.CreatedAt,
+			UpdatedAt: v[0].Group.UpdatedAt,
+		}
 
 		for _, item := range v {
-			groupedItems[i].Items = append(groupedItems[i].Items, Item{
+			gi.Items = append(gi.Items, Item{
 				ID:        item.ID,
 				Key:       item.Key,
 				Value:     item.Value,
@@ -64,8 +65,7 @@ func (is *itemService) makeGroupedItems(items []persistent.Item) []GroupedItems 
 				UpdatedAt: item.UpdatedAt,
 			})
 		}
-
-		i++
+		groupedItems = append(groupedItems, gi)
 	}
 
 	return groupedItems
