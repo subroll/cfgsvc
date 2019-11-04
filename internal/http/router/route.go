@@ -17,9 +17,11 @@ func NewRoute(
 	getGroupHandler,
 	postGroupHandler,
 	putGroupHandler,
-	deleteGroupHandler http.HandlerFunc) *mux.Router {
+	deleteGroupHandler http.HandlerFunc,
+	logMiddleware func(http.Handler) http.Handler) *mux.Router {
 	root := mux.NewRouter()
 	root.StrictSlash(true)
+	root.Use(logMiddleware)
 
 	root.Methods(http.MethodGet).Path("/").HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusOK)
@@ -27,7 +29,6 @@ func NewRoute(
 		if err != nil {
 			log.WithError(err).Error("can not write response")
 		}
-		return
 	})
 
 	// config route

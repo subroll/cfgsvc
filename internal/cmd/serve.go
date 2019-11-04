@@ -14,6 +14,7 @@ import (
 	"github.com/subroll/cfgsvc/internal/config"
 	"github.com/subroll/cfgsvc/internal/config/persistent/mysql"
 	"github.com/subroll/cfgsvc/internal/http/handler"
+	"github.com/subroll/cfgsvc/internal/http/middleware"
 	"github.com/subroll/cfgsvc/internal/http/router"
 )
 
@@ -61,7 +62,8 @@ func runServer(_ *cobra.Command, _ []string) {
 			groupHandler.Get,
 			groupHandler.Post,
 			groupHandler.Put,
-			groupHandler.Delete),
+			groupHandler.Delete,
+			middleware.RequestLog),
 	}
 
 	idleConnClosed := make(chan struct{})
