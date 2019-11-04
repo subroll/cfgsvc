@@ -10,7 +10,7 @@ CREATE TABLE `mst_config` (
   PRIMARY KEY (`id`),
   KEY `mst_config_group_id` (`mst_config_group_id`),
   CONSTRAINT `mst_config_ibfk_1` FOREIGN KEY (`mst_config_group_id`) REFERENCES `mst_config_group` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 -- +goose StatementEnd
 
 -- +goose Down
