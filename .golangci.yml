@@ -216,8 +216,7 @@ linters:
     - golint
   enable-all: false
   disable:
-    - gosimple
-  disable-all: false
+  disable-all: true
   presets:
     - bugs
     - unused
