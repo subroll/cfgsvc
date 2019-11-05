@@ -45,3 +45,6 @@ please execute the following command to see how to do it.
 ```
 $ ./<output name> serve -h
 ```
+
+### API specification
+Please check [apispec.yaml](/apispec.yaml) file
